@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Photo Upload</title>
+</head>
+<body>
+  <h1>Upload Your Photo</h1>
+  <input type="file" id="photoInput" accept="image/*">
+  <button id="uploadBtn">Upload Photo</button>
+
+  <p id="status"></p>
+  <img id="preview" src="" style="max-width:300px; display:none;">
+
+  <script>
+    const uploadBtn = document.getElementById('uploadBtn');
+    const photoInput = document.getElementById('photoInput');
+    const status = document.getElementById('status');
+    const preview = document.getElementById('preview');
+
+    uploadBtn.addEventListener('click', () => {
+      if(!photoInput.files.length) {
+        alert('Select a photo first!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('photo', photoInput.files[0]);
+
+      fetch('/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        status.textContent = data.message;
+        preview.src = data.url;
+        preview.style.display = 'block';
+      })
+      .catch(err => status.textContent = 'Upload failed!');
+    });
+  </script>
+</body>
+</html>
